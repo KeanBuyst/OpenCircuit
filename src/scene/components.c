@@ -21,6 +21,7 @@ DEFINE_MODEL(M_RESISTOR,
 
 void DrawComponent(State* state,Component component,Vector2 position){
     for (int i = 0; i < component.vertices_count - 1; i++){
+        
         Vector2 p1 = component.vertices[i];
         Vector2 p2 = component.vertices[i+1];
         if (component.flipped)
@@ -33,6 +34,19 @@ void DrawComponent(State* state,Component component,Vector2 position){
             Vector2Subtract(Vector2Add(p1,position),state->offset),
             Vector2Subtract(Vector2Add(p2,position),state->offset),
             5,component.color
+        );
+    }
+}
+
+void DrawComponentIcon(Component component,Vector2 position){
+    Vector2 scale = {2,2};
+    for (int i = 0; i < component.vertices_count - 1; i++){
+        Vector2 p1 = Vector2Divide(component.vertices[i],scale);
+        Vector2 p2 = Vector2Divide(component.vertices[i+1],scale);
+        DrawLineEx(
+            Vector2Add(p1,position),
+            Vector2Add(p2,position),
+            2,component.color
         );
     }
 }

@@ -38,20 +38,23 @@ int main() {
     state.dragging = false;
     state.offset = (Vector2) {0,0};
 
-    RenderTexture2D menu = LoadRenderTexture(300,HEIGHT);
-    Rectangle source = {0,0,menu.texture.width,-menu.texture.height};
+    RenderTexture2D menu = LoadRenderTexture(MENU_WIDTH,HEIGHT);
+    Rectangle source = {0,0,MENU_WIDTH,-menu.texture.height};
 
     while (!WindowShouldClose())
     {
-        state.menu_offset = -(GetRenderWidth() - 300);
-        Rectangle dest = {0,0,300,GetRenderHeight()};
+        float scaleX = (float) GetRenderWidth() / WIDTH;
+        float scaleY = (float) GetRenderHeight() / HEIGHT;
+        state.menu_offset = -(GetRenderWidth() - MENU_WIDTH * scaleX);
+        Rectangle dest = {0,0,MENU_WIDTH * scaleX,GetRenderHeight()};
+        // scale mouse
+        SetMouseScale(1/scaleX,1/scaleY);
         // do input
         SceneInput(&state);
         // draw menu
         BeginTextureMode(menu);
             ClearBackground(RAYWHITE);
             DrawLine(1,0,1,HEIGHT,BLACK);
-            DrawText("Testing",100,200,16,RED);
             DrawMenu(&state);
         EndTextureMode();
         // draw grid

@@ -25,6 +25,9 @@ typedef struct Component {
     uint current;
 } Component;
 
+#define RESISTOR { .vertices = M_RESISTOR, .vertices_count = M_RESISTOR_SIZE, .flipped = false, .color = BLACK, .resistance = 0, .voltage = 0, .current = 0}
+
 void DrawComponent(State* state,Component component,Vector2 position);
+void DrawComponentIcon(Component component,Vector2 position);
 
 #endif
