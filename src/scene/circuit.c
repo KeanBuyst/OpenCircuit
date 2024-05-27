@@ -19,29 +19,33 @@ Vector2 GetStartPoint(Node* node)
     return Vector2Add(vertex,node->position);
 }
 
-void draw(Node* node){
+void draw(State* state,Node* node){
     if (node->component == NULL){
         if (node->parent != NULL){
-            DrawLineEx(GetEndPoint(node->parent),node->position,5,BLACK);
+            Vector2 p1 = Vector2Add(GetEndPoint(node->parent),state->offset);
+            Vector2 p2 = Vector2Add(node->position,state->offset);
+            DrawLineEx(p1,p2,WIRE,BLACK);
         }
     }
     else 
     {
         if (node->parent != NULL){
-            DrawLineEx(GetEndPoint(node->parent),GetStartPoint(node),5,BLACK);
+            Vector2 p1 = Vector2Add(GetEndPoint(node->parent),state->offset);
+            Vector2 p2 = Vector2Add(GetStartPoint(node),state->offset);
+            DrawLineEx(p1,p2,WIRE,BLACK);
         }
-        DrawComponent(*node->component,node->position);
+        DrawComponent(state,*node->component,node->position);
     }
 }
 
-void doNode(Node* node){
-    draw(node);
+void doNode(State* state,Node* node){
+    draw(state,node);
     for (int i = 0; i < node->nodes; i++){
-        doNode(node->children[i]);
+        doNode(state,node->children[i]);
     }
 }
 
-void DrawNodes(Node root)
+void DrawNodes(State* state,Node root)
 {
-    doNode(&root);
+    doNode(state,&root);
 }

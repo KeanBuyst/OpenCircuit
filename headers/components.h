@@ -1,9 +1,7 @@
 #ifndef MODELS_H
 #define MODELS_H
 
-#include <stdbool.h>
-#include <raylib.h>
-#include <raymath.h>
+#include <scene.h>
 
 typedef unsigned int uint;
 
@@ -27,6 +25,6 @@ typedef struct Component {
     uint current;
 } Component;
 
-void DrawComponent(Component component,Vector2 position);
+void DrawComponent(State* state,Component component,Vector2 position);
 
 #endif

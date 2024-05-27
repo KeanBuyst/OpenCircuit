@@ -2,6 +2,8 @@
 
 #include <components.h>
 
+#define WIRE 5
+
 typedef unsigned char byte;
 
 typedef struct Node {
@@ -13,4 +15,4 @@ typedef struct Node {
     byte nodes;
 } Node;
 
-void DrawNodes(Node root);
+void DrawNodes(State* state,Node root);

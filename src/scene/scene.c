@@ -1,10 +1,13 @@
+#define RAYGUI_IMPLEMENTATION
+#include <raygui.h>
+
 #include "scene.h"
 #include <stdio.h>
 
 void SceneInput(State* state){
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        state->lastMousePos = GetMousePosition();
+        state->lastMousePos = Vector2Add(GetMousePosition(),state->offset);
         state->dragging = true;
     }
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
@@ -16,8 +19,14 @@ void SceneInput(State* state){
         Vector2 pos = GetMousePosition();
         if (Vector2Distance(state->lastMousePos,pos) > 1)
         {
-            Vector2 shift = Vector2Subtract(state->lastMousePos,pos);
-            state->camera.offset = Vector2Add(state->lastMousePos,shift);
+            state->offset = Vector2Subtract(state->lastMousePos,pos);
         }
+    }
+}
+
+void DrawMenu(State* state){
+    SetMouseOffset(state->menu_offset,0);
+    if (GuiButton((Rectangle) {0,0,300,60},"Button")){
+        printf("Pressed!\n");
     }
 }

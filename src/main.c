@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <scene.h>
+#include <circuit.h>
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -7,9 +7,9 @@
 #define GRID_SPACING 40
 
 void grid(int width,int height,int shiftX,int shiftY){
-    for (int x = GRID_SPACING - shiftX; x < width; x += GRID_SPACING)
+    for (int x = -shiftX; x < width; x += GRID_SPACING)
         DrawLine(x,0,x,height,LIGHTGRAY);
-    for (int y = GRID_SPACING - shiftY; y < height; y += GRID_SPACING)
+    for (int y = -shiftY; y < height; y += GRID_SPACING)
         DrawLine(0,y,width,y,LIGHTGRAY);
 }
 
@@ -34,40 +34,32 @@ int main() {
     node.parent = NULL;
     node.position = (Vector2) {200,200};
 
-    Camera2D camera;
-    Vector2 origin = {0,0};
-    camera.target = origin;
-    camera.offset = origin;
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
-
     State state;
-    state.camera = camera;
     state.dragging = false;
+    state.offset = (Vector2) {0,0};
 
     RenderTexture2D menu = LoadRenderTexture(300,HEIGHT);
-    Rectangle source = {0,0,menu.texture.width,menu.texture.height};
+    Rectangle source = {0,0,menu.texture.width,-menu.texture.height};
 
     while (!WindowShouldClose())
     {
-        int offset = GetRenderWidth() - 300;
-        Rectangle dest = {offset,0,300,GetRenderHeight()};
+        state.menu_offset = -(GetRenderWidth() - 300);
+        Rectangle dest = {0,0,300,GetRenderHeight()};
         // do input
         SceneInput(&state);
         // draw menu
         BeginTextureMode(menu);
             ClearBackground(RAYWHITE);
             DrawLine(1,0,1,HEIGHT,BLACK);
+            DrawText("Testing",100,200,16,RED);
+            DrawMenu(&state);
         EndTextureMode();
         // draw grid
         BeginDrawing();
             ClearBackground(WHITE);
-            grid(GetRenderWidth(),GetRenderHeight(),(int) (state.camera.offset.x) % GRID_SPACING,(int) (state.camera.offset.y) % GRID_SPACING);
-            BeginMode2D(state.camera);
-                DrawNodes(node);
-                // draw components here
-            EndMode2D();
-            DrawTexturePro(menu.texture,source,dest,origin,0,WHITE);
+            grid(GetRenderWidth(),GetRenderHeight(),(int) (state.offset.x) % GRID_SPACING,(int) (state.offset.y) % GRID_SPACING);
+            DrawNodes(&state,node); // drawing components
+            DrawTexturePro(menu.texture,source,dest,(Vector2) {state.menu_offset,0},0,WHITE);
         EndDrawing();
     }
 

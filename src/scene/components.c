@@ -19,7 +19,7 @@ DEFINE_MODEL(M_RESISTOR,
     (Vector2){60, 0}
 );
 
-void DrawComponent(Component component,Vector2 position){
+void DrawComponent(State* state,Component component,Vector2 position){
     for (int i = 0; i < component.vertices_count - 1; i++){
         Vector2 p1 = component.vertices[i];
         Vector2 p2 = component.vertices[i+1];
@@ -29,6 +29,10 @@ void DrawComponent(Component component,Vector2 position){
             p1 = (Vector2) {p1.y,p1.x};
             p2 = (Vector2) {p2.y,p2.x};
         }
-        DrawLineEx(Vector2Add(p1,position),Vector2Add(p2,position),5,component.color);
+        DrawLineEx(
+            Vector2Subtract(Vector2Add(p1,position),state->offset),
+            Vector2Subtract(Vector2Add(p2,position),state->offset),
+            5,component.color
+        );
     }
 }
