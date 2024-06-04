@@ -3,6 +3,8 @@
         "raylib.h": "c",
         "stdbool.h": "c",
         "stdio.h": "c",
-        "scene.h": "c"
+        "scene.h": "c",
+        "circuit.h": "c",
+        "components.h": "c"
     }
 }

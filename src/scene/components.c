@@ -19,7 +19,50 @@ DEFINE_MODEL(M_RESISTOR,
     (Vector2){60, 0}
 );
 
+Rectangle GetShape(Vector2* points,uint count){
+    int minX = 0, maxX = 0;
+    int minY = 0, maxY = 0;
+    for (int i = 0; i < count; i++){
+        Vector2 vec = points[i];
+        if (vec.x > maxX) maxX = vec.x;
+        if (vec.y > maxY) maxY = vec.y;
+        if (vec.x < minX) minX = vec.x;
+        if (vec.y < minY) minY = vec.y;
+    }
+    return (Rectangle) {minX,minY,maxX,maxY};
+}
+
+Component CreateResistor(uint resistance){
+    return (Component) {
+        M_RESISTOR,
+        M_RESISTOR_SIZE,
+        false,
+        true,
+        BLACK,
+        GetShape(M_RESISTOR,M_RESISTOR_SIZE),
+        resistance,0,0
+    };
+}
+
 void DrawComponent(State* state,Component component,Vector2 position){
+    if (component.selected){
+        Vector2 p1;
+        Vector2 p2;
+        if (component.flipped){
+            p1.y = component.shape.x + position.y;
+            p1.x = component.shape.y + position.x;
+            p2.x = component.shape.height - component.shape.y;
+            p2.y = component.shape.width - component.shape.x; 
+        } else {
+            p1.x = component.shape.x + position.x;
+            p1.y = component.shape.y + position.y;
+            p2.y = component.shape.height - component.shape.y;
+            p2.x = component.shape.width - component.shape.x; 
+        }
+        p1 = Vector2Subtract(p1,state->offset);
+        DrawRectangle(p1.x,p1.y,p2.x,p2.y,(Color) {230,230,255,100});
+        DrawRectangleLines(p1.x,p1.y,p2.x,p2.y,BLUE);
+    }
     for (int i = 0; i < component.vertices_count - 1; i++){
         
         Vector2 p1 = component.vertices[i];

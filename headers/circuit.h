@@ -7,7 +7,8 @@
 typedef unsigned char byte;
 
 typedef struct Node {
-    Component* component;
+    bool isWire;
+    Component component;
     Vector2 position;
     // connected nodes
     struct Node* parent;

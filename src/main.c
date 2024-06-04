@@ -18,18 +18,10 @@ int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(WIDTH, HEIGHT, "OpenCircuit");
     
-
-    Component component;
-    component.color = BLACK;
-    component.current = 0;
-    component.resistance = 2;
-    component.voltage = 0;
-    component.flipped = false;
-    component.vertices = M_RESISTOR;
-    component.vertices_count = M_RESISTOR_SIZE;
+    Component component = CreateResistor(1);
 
     Node node;
-    node.component = &component;
+    node.component = component;
     node.nodes = 0;
     node.parent = NULL;
     node.position = (Vector2) {200,200};
@@ -37,18 +29,21 @@ int main() {
     State state;
     state.dragging = false;
     state.offset = (Vector2) {0,0};
+    state.ui = (UI) {0};
+    state.cache = CacheInit(5,sizeof(Node));
+    state.dragged = NULL;
+
+    CacheAdd(&state.cache,&node);
 
     RenderTexture2D menu = LoadRenderTexture(MENU_WIDTH,HEIGHT);
     Rectangle source = {0,0,MENU_WIDTH,-menu.texture.height};
 
     while (!WindowShouldClose())
     {
-        float scaleX = (float) GetRenderWidth() / WIDTH;
-        float scaleY = (float) GetRenderHeight() / HEIGHT;
-        state.menu_offset = -(GetRenderWidth() - MENU_WIDTH * scaleX);
-        Rectangle dest = {0,0,MENU_WIDTH * scaleX,GetRenderHeight()};
-        // scale mouse
-        SetMouseScale(1/scaleX,1/scaleY);
+        state.aspect.x = (float) GetRenderWidth() / WIDTH;
+        state.aspect.y = (float) GetRenderHeight() / HEIGHT;
+        state.menu_offset = -(GetRenderWidth() - MENU_WIDTH * state.aspect.x);
+        Rectangle dest = {0,0,MENU_WIDTH * state.aspect.x,GetRenderHeight()};
         // do input
         SceneInput(&state);
         // draw menu
@@ -61,12 +56,13 @@ int main() {
         BeginDrawing();
             ClearBackground(WHITE);
             grid(GetRenderWidth(),GetRenderHeight(),(int) (state.offset.x) % GRID_SPACING,(int) (state.offset.y) % GRID_SPACING);
-            DrawNodes(&state,node); // drawing components
             DrawTexturePro(menu.texture,source,dest,(Vector2) {state.menu_offset,0},0,WHITE);
+            NodesHandler(&state); // drawing components
         EndDrawing();
     }
 
     UnloadRenderTexture(menu);
+    CacheFree(&state.cache);
 
     CloseWindow();
 
