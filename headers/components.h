@@ -33,5 +33,6 @@ Component CreateResistor(uint resistance);
 void DrawComponent(State* state,Component component,Vector2 position);
 void DrawComponentIcon(Component component,Vector2 position);
 Rectangle GetShape(Vector2* points,uint count);
+Rectangle RelativeShape(State* state,Component component,Vector2 position);
 
 #endif

@@ -19,33 +19,28 @@ Vector2 GetStartPoint(Node* node)
     return Vector2Add(vertex,node->position);
 }
 
-void draw(State* state,Node* node){
-    if (node->isWire){
-        if (node->parent != NULL){
-            Vector2 p1 = Vector2Add(GetEndPoint(node->parent),state->offset);
-            Vector2 p2 = Vector2Add(node->position,state->offset);
-            DrawLineEx(p1,p2,WIRE,BLACK);
-        }
-    }
-    else 
-    {
-        if (node->parent != NULL){
-            Vector2 p1 = Vector2Add(GetEndPoint(node->parent),state->offset);
-            Vector2 p2 = Vector2Add(GetStartPoint(node),state->offset);
-            DrawLineEx(p1,p2,WIRE,BLACK);
-        }
-        DrawComponent(state,node->component,node->position);
-    }
-}
 
-void doNode(State* state,Node* node){
-    draw(state,node);
-    for (int i = 0; i < node->nodes; i++){
-        doNode(state,node->children[i]);
+void DrawWires(State* state,Node* node){
+    Vector2 pos = Vector2Subtract(GetEndPoint(node),state->offset);
+    for (int j = 0; j < node->nodes; j++){
+        Node* next = node->children[j];
+        Vector2 pos1;
+        Vector2 pos2;
+        if (node->position.x < next->position.x){
+            pos1 = Vector2Subtract(GetEndPoint(node),state->offset);
+            if (!next->component.flipped) pos2 = Vector2Subtract(GetStartPoint(next),state->offset);
+        } else {
+            pos1 = Vector2Subtract(GetStartPoint(node),state->offset);
+            if (!next->component.flipped) pos2 = Vector2Subtract(GetEndPoint(next),state->offset);
+        }
+        if (next->component.flipped)
+        {
+            if (node->position.y > next->position.y){
+                pos2 = Vector2Subtract(GetEndPoint(next),state->offset);
+            } else {
+                pos2 = Vector2Subtract(GetStartPoint(next),state->offset);
+            }
+        }
+        DrawLineEx(pos1,pos2,5,BLACK);
     }
-}
-
-void DrawNodes(State* state,Node root)
-{
-    doNode(state,&root);
 }

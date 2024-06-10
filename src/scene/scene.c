@@ -7,6 +7,30 @@
 void NodesHandler(State* state){
     for (int i = 0; i < state->cache.size; i++){
         Node* node = CacheGet(&state->cache,i);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            if (CheckCollisionPointRec(GetMousePosition(),RelativeShape(state,node->component,node->position))){
+                if (IsKeyDown(KEY_LEFT_SHIFT) && state->selected != NULL && node != state->selected){
+                    Node* prev = state->selected;
+                    if (prev->nodes == 5) {
+                        state->ui.ui_error = TOO_MANY_CONNECTIONS;
+                    } else {
+                        for (int j = 0; j < prev->nodes; j++)
+                            if (prev->children[j] == node) return;
+                        prev->children[prev->nodes] = node;
+                        prev->nodes++;
+                    }
+                } else {
+                    if (node->component.selected) {
+                        state->dragging = true;
+                        state->dragged = node;
+                    }
+                    state->selected = node;
+                    node->component.selected = true;
+                }
+            } else node->component.selected = false;
+        }
+        // draw wires to connect nodes
+        DrawWires(state,node);
         DrawComponent(state,node->component,node->position);
     }
 }
@@ -26,6 +50,12 @@ void SceneInput(State* state){
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
     {
         state->dragging = false;
+        if (state->dragged == NULL) return;
+        Node* node = state->dragged;
+        node->position = (Vector2) {
+            (int) (node->position.x / GRID_SPACING) * GRID_SPACING + GRID_SPACING,
+            (int) (node->position.y / GRID_SPACING) * GRID_SPACING + GRID_SPACING
+        };
         state->dragged = NULL;
         return;
     }
@@ -39,7 +69,7 @@ void SceneInput(State* state){
             }
         }
         else {
-            ((Node*) state->dragged)->position = pos;
+            ((Node*) state->dragged)->position = Vector2Add(pos,state->offset);
         }
     }
 }
@@ -72,4 +102,11 @@ void DrawMenu(State* state){
     }
     SetMouseScale(1,1);
     SetMouseOffset(0,0);
+}
+
+void DrawErrors(State* state){
+    switch (state->ui.ui_error){
+        case TOO_MANY_CONNECTIONS:
+            GuiMessageBox((Rectangle) {0,0,400,300},"Error","Max connections for node reached","");
+    }
 }

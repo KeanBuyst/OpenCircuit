@@ -44,24 +44,29 @@ Component CreateResistor(uint resistance){
     };
 }
 
+Rectangle RelativeShape(State* state,Component component,Vector2 position){
+    Vector2 p1;
+    Vector2 p2;
+    if (component.flipped){
+        p1.y = component.shape.x + position.y;
+        p1.x = component.shape.y + position.x;
+        p2.x = component.shape.height - component.shape.y;
+        p2.y = component.shape.width - component.shape.x; 
+    } else {
+        p1.x = component.shape.x + position.x;
+        p1.y = component.shape.y + position.y;
+        p2.y = component.shape.height - component.shape.y;
+        p2.x = component.shape.width - component.shape.x; 
+    }
+    p1 = Vector2Subtract(p1,state->offset);
+    return (Rectangle) {p1.x,p1.y,p2.x,p2.y};
+}
+
 void DrawComponent(State* state,Component component,Vector2 position){
     if (component.selected){
-        Vector2 p1;
-        Vector2 p2;
-        if (component.flipped){
-            p1.y = component.shape.x + position.y;
-            p1.x = component.shape.y + position.x;
-            p2.x = component.shape.height - component.shape.y;
-            p2.y = component.shape.width - component.shape.x; 
-        } else {
-            p1.x = component.shape.x + position.x;
-            p1.y = component.shape.y + position.y;
-            p2.y = component.shape.height - component.shape.y;
-            p2.x = component.shape.width - component.shape.x; 
-        }
-        p1 = Vector2Subtract(p1,state->offset);
-        DrawRectangle(p1.x,p1.y,p2.x,p2.y,(Color) {230,230,255,100});
-        DrawRectangleLines(p1.x,p1.y,p2.x,p2.y,BLUE);
+        Rectangle rect = RelativeShape(state,component,position);
+        DrawRectangleRec(rect,(Color) {230,230,255,100});
+        DrawRectangleLinesEx(rect,1,BLUE);
     }
     for (int i = 0; i < component.vertices_count - 1; i++){
         

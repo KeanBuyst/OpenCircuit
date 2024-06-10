@@ -4,8 +4,6 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
-#define GRID_SPACING 40
-
 void grid(int width,int height,int shiftX,int shiftY){
     for (int x = -shiftX; x < width; x += GRID_SPACING)
         DrawLine(x,0,x,height,LIGHTGRAY);
@@ -17,14 +15,6 @@ int main() {
     SetConfigFlags(FLAG_VSYNC_HINT);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(WIDTH, HEIGHT, "OpenCircuit");
-    
-    Component component = CreateResistor(1);
-
-    Node node;
-    node.component = component;
-    node.nodes = 0;
-    node.parent = NULL;
-    node.position = (Vector2) {200,200};
 
     State state;
     state.dragging = false;
@@ -32,8 +22,7 @@ int main() {
     state.ui = (UI) {0};
     state.cache = CacheInit(5,sizeof(Node));
     state.dragged = NULL;
-
-    CacheAdd(&state.cache,&node);
+    state.selected = NULL;
 
     RenderTexture2D menu = LoadRenderTexture(MENU_WIDTH,HEIGHT);
     Rectangle source = {0,0,MENU_WIDTH,-menu.texture.height};
@@ -58,6 +47,7 @@ int main() {
             grid(GetRenderWidth(),GetRenderHeight(),(int) (state.offset.x) % GRID_SPACING,(int) (state.offset.y) % GRID_SPACING);
             DrawTexturePro(menu.texture,source,dest,(Vector2) {state.menu_offset,0},0,WHITE);
             NodesHandler(&state); // drawing components
+            DrawErrors(&state);
         EndDrawing();
     }
 

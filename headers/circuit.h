@@ -12,8 +12,10 @@ typedef struct Node {
     Vector2 position;
     // connected nodes
     struct Node* parent;
-    struct Node* children[3];
+    struct Node* children[5];
     byte nodes;
 } Node;
 
-void DrawNodes(State* state,Node root);
+Vector2 GetStartPoint(Node* node);
+Vector2 GetEndPoint(Node* node);
+void DrawWires(State* state,Node* node);
